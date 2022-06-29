@@ -3,12 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=script, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>
 </head>
 <body>
+    <canvas id="myChart" width="800" height="400"></canvas>
     <script>
-        
+
+        plotChart();
+
+        async function plotChart(){
+            const data = await GetCSVData();
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.seasons,
+                datasets: [{
+                    label: 'Kobe points average each season',
+                    data: data.points,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        ticks: {
+                        // Include Pts in the ticks
+                        callback: function(value, index, ticks) {
+                            return value + " pts";
+                        }
+                    }
+                }
+            }
+        }
+            });
+        }
+        async function GetCSVData(){
+            const response = await fetch("Kobe_season_avg.csv");
+            const data = await response.text();
+            const rows = data.split("\n").slice(1);
+            let seasons = [];
+            let points = [];
+            rows.forEach((row) => {
+                const cols = row.split(",");
+                seasons.push(cols[0]);
+                if(cols[29].includes("\r")){
+                    points.push(cols[29] - "\r");
+                }
+            })
+            return {seasons , points};
+        }
     </script>
 </body>
 </html>
