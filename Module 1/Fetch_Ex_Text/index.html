@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Exercises</title>
+</head>
+<body>
+    <h1>Fetch a Poem</h1>
+    <p id="poem"></p>
+    <script>
+        let para = document.querySelector("#poem");
+
+        //fetch text
+        
+        fetchText().catch(error => {
+            console.error(error);
+        })
+
+        async function fetchText(){
+            const prom = await fetch("Poem.txt");
+            const text = await prom.text();
+            para.innerHTML = text;
+           //
+        }
+
+    </script>
+</body>
+</html>

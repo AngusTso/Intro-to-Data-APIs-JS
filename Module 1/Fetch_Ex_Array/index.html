@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="images"></div>
+    <script>
+        const urls = ["image/daniele-levis-pelusi-311027-unsplash.jpg" , 
+        "image/guy-stevens-746794-unsplash.jpg" , "image/sharon-pittaway-98257-unsplash.jpg"];
+
+        const panel = document.querySelector(".images");
+        
+        urls.forEach((url) => {
+            fetchImage(url).then(
+                console.log("about to fetch a image")
+            ).catch(error => console.error(error));
+        });
+
+        async function fetchImage(url){
+            console.log(`Fetching ${url}`);
+            const prom = await fetch(url);
+            const img = await prom.blob();
+            const objurl = URL.createObjectURL(img);
+            panel.innerHTML += `<image src="${objurl}" ><image>`
+        }
+    </script>
+</body>
+</html>
