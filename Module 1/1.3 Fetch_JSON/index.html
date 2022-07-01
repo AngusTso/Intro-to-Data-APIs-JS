@@ -4,22 +4,57 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
     <title>Document</title>
 </head>
 <body>
+    <style>#map { height: 480px; }</style>
     <h1>Where is the iss</h1>
+    <div id="map"></div>
     <span id="latitude"></span></br><span id="longitude"></span></br><span id="velocity"></span></br>
     <script>
+        //MAKE MAP AND TILES
+        const issMap = L.map('map').setView([0, 0], 1);
+        const openMapAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        const openMap = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        L.tileLayer(openMap, {attribution:openMapAttribution}).addTo(issMap);
+
+
+        //MAKE ICON FOR MAP
+        var issIcon = L.icon({
+            iconUrl: 'iss200.png',
+            iconSize: [50, 32],
+            iconAnchor: [25, 16],
+            popupAnchor: [-3, -0],
+        }); 
+        issMarker = L.marker([0, 0] , {icon : issIcon}).addTo(issMap)
+            .bindPopup('current ISS Location')
+            .openPopup();
         const url_api = "https://api.wheretheiss.at/v1/satellites/25544";
 
+        let isFirstTime = true;
         async function getISS(){
             const data = await fetch(url_api);
             const issObj = await data.json();
             const {longitude, latitude , velocity} = issObj;
-            document.getElementById("latitude").textContent = `Latitude: ${latitude}`;
-            document.getElementById("longitude").textContent = `Longitude: ${longitude}`;
-            document.getElementById("velocity").textContent = `Velocity: ${velocity}`;
+            issMarker.setLatLng([latitude , longitude]);
+            //only zoom to iss location first time load in
+            if(isFirstTime){
+                issMap.setView([latitude, longitude], 4);
+                isFirstTime = false;
+            }
+            document.getElementById("latitude").textContent = `Latitude: ${latitude.toFixed(2)}°`;
+            document.getElementById("longitude").textContent = `Longitude: ${longitude.toFixed(2)}°`;
+            document.getElementById("velocity").textContent = `Velocity: ${velocity.toFixed(2)} km/h`;
         }
+
+        getISS();
         setInterval(getISS , 1000);
     </script>
 </body>
