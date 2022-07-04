@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navmenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="Gallery.html">Gallery</a></li>
+        </ul>
+    </nav>
+    <h1>Where is your Location</h1></br>
+    <div class="container">
+    <script>
+        GetData();
+        async function GetData(){
+            const responses = await fetch("/api");
+            const data = await responses.json();
+            console.log(data);
+
+            for(item of data) {            
+                const root = document.createElement("div");
+                root.classList.add("card")
+                const food = document.createElement("div");
+                food.classList.add(`tag`);
+                const cardbody = document.createElement("div");
+                cardbody.classList.add("card__body");
+                const loc = document.createElement("div");
+                const time = document.createElement("div");
+                const image = document.createElement("img");
+                image.classList.add("card__image");
+                cardbody.append(image ,food , loc , time)
+                food.textContent = item.food;
+                loc.textContent = `Latidtude : ${item.lat} , Longtitude: ${item.lon}`
+                time.textContent = new Date(item.timestamp).toLocaleString();
+                image.src = item.image64;
+                root.append(cardbody);
+                const container = document.querySelector(".container");
+                container.append(root);
+            }
+        }   
+    </script>
+    
+</body>
+</html>

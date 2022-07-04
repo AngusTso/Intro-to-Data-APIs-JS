@@ -12,41 +12,91 @@
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
 </head>
 <body>
-    <h1>Where is your Location</h1>
-    <span id="latitude"></span></br><span id="longitude"></span></br>
-    <script>
-
-
-        if('geolocation' in navigator) {
-            console.log('geolocation is available')
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                document.getElementById("latitude").textContent = `Latitude: ${lat.toFixed(2)}°`;
-                document.getElementById("longitude").textContent = `Longitude: ${lon.toFixed(2)}°`;
-                
-                const data = {lat , lon};
-                const options = {
-                    method: "Post",
-                    headers: {
-                        "content-type": "application/json"
-                    },
-                    body: JSON.stringify(data),
-                }
-                const reponse = await fetch("/api" , options);
-                const jsonData = await reponse.json();
-
-                console.log(jsonData);
-
-            });
-        } else {
-            console.log('geolocation is not available')
+    <style>
+        nav{
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #222;
+            box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.25);
+            color: white;
+            text-transform: uppercase;
+            overflow: hidden;
+            width:100%;
+        }
+        .navmenu{
+            display:flex;
+            list-style: none 
+            
+        }
+        .navmenu a {
+            color: white;
+            border: 3px solid rgb(167, 60, 60);
+            padding: 0.5em;
+            font-weight: normal;
+            text-decoration: none;
         }
 
-        
-
+        .navmenu a:visited{
+            border: 3px solid rgb(167, 60, 153);
+        }
+        li + li {
+            margin-left: 3rem;;
+        }
+    </style>
+    <nav class="navbar">
+        <ul class="navmenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="Gallery.html">Gallery</a></li>
+        </ul>
+    </nav>
+    <h1>Where is your Location</h1>
+    <span id="latitude"></span></br><span id="longitude"></span></br>
+    <span>Tell me your mood</span></br><input type="text">
+    <input type="button" id="submit" value="Submit"><br>
+    <script>
+        function setup(){
+            noCanvas();
+            const video = createCapture(VIDEO);
+            video.size(320, 240);
+            const foodInput = document.querySelector('input[type="text"]');
+            var lat , lon , food;
+            const button = document.getElementById('submit');
+            button.addEventListener('click', async event => {
+                    food = foodInput.value;
+                    video.loadPixels();
+                    const image64 = video.canvas.toDataURL();
+                    const data = {lat , lon , food , image64};
+                    const options = {
+                        method: "Post",
+                        headers: {
+                                "content-type": "application/json"
+                        },
+                        body: JSON.stringify(data),
+                    }
+                    const reponse = await fetch("/api" , options);
+                    const jsonData = await reponse.json();
+                    console.log(jsonData);
+            });
+            if('geolocation' in navigator) {
+                    console.log('geolocation is available')
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                    lat = position.coords.latitude;
+                    lon = position.coords.longitude;
+                    document.getElementById("latitude").textContent = `Latitude: ${lat.toFixed(2)}°`;
+                    document.getElementById("longitude").textContent = `Longitude: ${lon.toFixed(2)}°`;
+                    });
+                }else {
+                    console.log('geolocation is not available')
+                }
+                
+        }
         
     </script>
 
