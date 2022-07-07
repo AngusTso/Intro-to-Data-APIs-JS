@@ -1,0 +1,21 @@
+{
+  "name": "module-3",
+  "version": "1.0.0",
+  "description": "Weather app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Weather",
+    "openWeather",
+    "location"
+  ],
+  "author": "Angus",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nedb": "^1.8.0",
+    "node-fetch": "^2.6.7"
+  }
+}

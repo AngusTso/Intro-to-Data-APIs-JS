@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where is your location?</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navmenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="Gallery.html">Gallery</a></li>
+        </ul>
+    </nav>
+    <h1>Where is your Location</h1>
+    <span id="latitude"></span></br><span id="longitude"></span></br>
+    <input type="button" id="submit" value="Checkin"><br>
+    <script>
+        var lat , lon;
+        if('geolocation' in navigator) {
+            console.log('geolocation is available')
+            navigator.geolocation.getCurrentPosition(async (position) => {
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            document.getElementById("latitude").textContent = `Latitude: ${lat.toFixed(2)}°`;
+            document.getElementById("longitude").textContent = `Longitude: ${lon.toFixed(2)}°`;
+            const api_url = `/weather/${lat},${lon}`
+            const response = await fetch(api_url);
+            const weather = await response.json();
+            console.log(weather);
+            });
+            }else {
+                console.log('geolocation is not available')
+            }
+        
+        const button = document.getElementById('submit');
+        button.addEventListener('click', async event => {
+            
+
+        });
+        
+        
+    </script>
+
+</body>
+</html>
