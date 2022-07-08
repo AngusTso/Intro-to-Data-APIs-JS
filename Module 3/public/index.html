@@ -19,15 +19,18 @@
     <nav class="navbar">
         <ul class="navmenu">
             <li><a href="index.html">Home</a></li>
-            <li><a href="Gallery.html">Gallery</a></li>
+            <li><a href="record.html">Past_record</a></li>
         </ul>
     </nav>
-    <h1>Where is your Location</h1>
+    <h1>Weather of your location</h1>
     <span id="latitude"></span></br><span id="longitude"></span></br>
+    <p id="weather"></p>
+    <p id="aq"></p>
     <input type="button" id="submit" value="Checkin"><br>
     <script>
-        var lat , lon;
-        if('geolocation' in navigator) {
+        let lat , lon ,aq;
+        try{ 
+            if('geolocation' in navigator) {
             console.log('geolocation is available')
             navigator.geolocation.getCurrentPosition(async (position) => {
             lat = position.coords.latitude;
@@ -36,19 +39,42 @@
             document.getElementById("longitude").textContent = `Longitude: ${lon.toFixed(2)}°`;
             const api_url = `/weather/${lat},${lon}`
             const response = await fetch(api_url);
-            const weather = await response.json();
-            console.log(weather);
+            const data = await response.json();
+            const weather_summary = data.weather.weather[0].description;
+            const weather_station = data.weather.name;
+            const weather_temperature = Math.floor(data.weather.main.temp - 273.15);
+            if(data.air_quality.results[0] == undefined){
+                aq = -1;
+                document.getElementById("aq").textContent = "no air quality reading currently avaliable";
+            } 
+            else{
+                aq = data.air_quality.results[0].measurements[0];
+                document.getElementById("aq").textContent = `The air quality at ${lat.toFixed(2)}°, ${lon.toFixed(2)}° is ${aq.value} ${aq.unit} parameter: ${aq.parameter}  Last updated : ${aq.lastUpdated}`;
+            }
+            
+            document.getElementById("weather").textContent = `The weather at ${lat.toFixed(2)}°, ${lon.toFixed(2)}° is ${weather_summary} , the temparture at ${weather_station} is ${weather_temperature}°c`;
+            
+            const db_data = {lat , lon ,weather_summary , weather_station , weather_temperature , aq};
+                    const options = {
+                        method: "Post",
+                        headers: {
+                                "content-type": "application/json"
+                        },
+                        body: JSON.stringify(db_data),
+                    }
+                    const reponse = await fetch("/api" , options);
+                    const jsonData = await reponse.json();
+                    console.log(jsonData);
             });
             }else {
                 console.log('geolocation is not available')
+                
             }
-        
-        const button = document.getElementById('submit');
-        button.addEventListener('click', async event => {
-            
-
-        });
-        
+        }
+        catch(error){
+            console.log('Something went wrong');
+        }
+       
         
     </script>
 

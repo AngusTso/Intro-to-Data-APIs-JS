@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+    <title>Document</title>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="navmenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="record.html">Past_record</a></li>
+        </ul>
+    </nav>
+    <style>#map { height: 480px; }</style>
+    <h1>Where is the iss</h1>
+    <div id="map"></div>
+    <span id="latitude"></span></br><span id="longitude"></span></br><span id="velocity"></span></br>
+    <script>
+        //MAKE MAP AND TILES
+        const myMap = L.map('map').setView([0, 0], 1);
+        const openMapAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        const openMap = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        L.tileLayer(openMap, {attribution:openMapAttribution}).addTo(myMap);
+
+
+        //Get data from database and display the marker on the map
+        GetData();
+        async function GetData(){
+            const responses = await fetch("/api");
+            const data = await responses.json();
+            console.log(data);
+
+            for(item of data) {
+                let txt = `The weather at ${item.lat}°, ${item.lon}° is ${item.weather_summary} , the temparture at ${item.weather_station} is ${item.weather_temperature}°C <br>`            
+                
+
+                if(item.aq != -1){
+                    txt += `The air quality is ${item.aq.value} ${item.aq.unit} parameter: ${item.aq.parameter}  Last updated : ${item.aq.lastUpdated}`;
+                }
+                else{
+                    txt += "No air quality reading currently avaliable";
+                }
+                myMarker = L.marker([item.lat, item.lon]).addTo(myMap)
+                .bindPopup(txt);
+                
+            }
+        }   
+        
+        
+
+        
+    </script>
+</body>
+</html>
